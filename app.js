@@ -8,7 +8,15 @@
   let run = null;
   let configMode = 'text';
   let toastTimer;
-  let soundOn = false;
+  let audioEnabled = false;
+  let audioChoiceMade = false;
+  let audioMuted = false;
+  let audioVolume = 0.4;
+  try { audioMuted=localStorage.getItem('quimifriv-muted')==='true';const storedVolume=localStorage.getItem('quimifriv-volume');if(storedVolume!==null){const savedVolume=Number(storedVolume);if(Number.isFinite(savedVolume)&&savedVolume>=0&&savedVolume<=1)audioVolume=savedVolume;} } catch {}
+  const tracks={site:new Audio('assets/quimifriv-theme.mp3'),catcher:new Audio('assets/food-drop.mp3')};
+  const effects={correct:new Audio('assets/check-true.mp3'),success:new Audio('assets/success.mp3')};
+  Object.values(tracks).forEach(audio=>{audio.loop=true;audio.preload='none';});
+  Object.values(effects).forEach(audio=>{audio.preload='auto';});
   let catcher = null;
   const $ = (selector, root=document) => root.querySelector(selector);
   const dialog = $('#gameDialog');
@@ -46,9 +54,29 @@
     $('#gameGrid').innerHTML=games.map((g,i)=>`<article class="game-card ${state.completed.includes(g.id)?'completed':''}"><div class="card-top"><span class="game-icon">${g.icon}</span><span class="game-tag">${esc(g.tag)}</span></div><h3>${esc(g.title)}</h3><p>${esc(g.description)}</p><div class="card-bottom"><span class="difficulty">${esc(g.difficulty)} <span>${'★'.repeat(g.difficulty==='Básico'?1:g.difficulty==='Intermedio'?2:3)}</span></span><button class="play-button" type="button" data-play="${g.id}">${state.completed.includes(g.id)?'Jugar otra vez':'Jugar'} →</button></div></article>`).join('');
   }
   function showToast(message){ const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
-  function playTone(good){ if(!soundOn)return; try{const C=window.AudioContext||window.webkitAudioContext;const c=new C();const o=c.createOscillator();const gain=c.createGain();o.connect(gain);gain.connect(c.destination);o.frequency.value=good?660:220;gain.gain.value=.06;o.start();o.stop(c.currentTime+.12);o.onended=()=>c.close();}catch{} }
+  function syncAudioControls(){
+    const soundButton=$('#soundToggle');soundButton.setAttribute('aria-pressed',String(audioEnabled));soundButton.querySelector('.sound-label').textContent=audioEnabled?'Pausar':'Música';soundButton.title=audioEnabled?'Pausar la música':'Reproducir la música de QuimiFriv';
+    $('#muteAudio').setAttribute('aria-pressed',String(audioMuted));$('#muteAudio').textContent=audioMuted?'Activar sonido':'Silenciar';
+    $('#musicVolume').value=audioVolume;$('#volumeValue').textContent=`${Math.round(audioVolume*100)}%`;
+    [...Object.values(tracks),...Object.values(effects)].forEach(audio=>audio.volume=audioMuted?0:audioVolume);
+  }
+  function pauseTrack(name){tracks[name].pause();}
+  function pauseAllTracks(){Object.values(tracks).forEach(audio=>audio.pause());}
+  function playTrack(name){
+    if(!audioEnabled)return;
+    Object.entries(tracks).forEach(([key,audio])=>{if(key!==name)audio.pause();});
+    const audio=tracks[name];audio.volume=audioMuted?0:audioVolume;
+    if(audio.paused)audio.play().catch(()=>showToast('Toca Música para activar el audio.'));
+  }
+  function playEffect(name){
+    if(!audioEnabled||audioMuted)return;
+    const audio=effects[name];audio.currentTime=0;audio.volume=audioVolume;
+    audio.play().catch(()=>{});
+  }
+  function playTone(good){if(good){playEffect('correct');return;}if(!audioEnabled||audioMuted)return;try{const C=window.AudioContext||window.webkitAudioContext;const c=new C();const o=c.createOscillator();const gain=c.createGain();o.connect(gain);gain.connect(c.destination);o.frequency.value=220;gain.gain.value=.06*audioVolume;o.start();o.stop(c.currentTime+.12);o.onended=()=>c.close();}catch{} }
   function openGame(id){
     activeGame=data.games.find(g=>g.id===id); if(!activeGame)return;
+    pauseTrack('site');
     run=null;configMode='text';
     if(activeGame.kind==='catcher'){
       content.innerHTML=`<div class="dialog-head"><span class="dialog-kicker">${esc(activeGame.tag)} · LABORATORIO</span><h2 class="dialog-title" id="dialogTitle">🧑🏻‍🔬 ${esc(activeGame.title)}</h2><p class="dialog-desc">${esc(activeGame.description)}</p></div><div class="catcher-intro"><span class="catcher-intro-icon">🧪</span><h3>¡Alimenta al científico!</h3><p>${esc(activeGame.instruction)}</p><div class="start-rules"><span>⚛️ Elemento: +10 puntos</span><span>🧬 Molécula: −1 vida</span><span>⬇️ 10 elementos perdidos = fin</span></div><button class="start-button" type="button" data-action="start-catcher">Comenzar partida</button></div>`;
@@ -144,6 +172,7 @@
     const metaEl=$('.game-meta');if(metaEl)metaEl.outerHTML=meta();
   }
   function finishRun(){
+    playEffect('success');
     const earned=run.score;state.points+=earned;const previous=state.best[activeGame.id]||0;state.best[activeGame.id]=Math.max(previous,earned);
     const completedNow=run.lives>0&&run.correct>=Math.ceil(run.questions.length*.6);
     let medalMessage='';
@@ -155,6 +184,7 @@
   const catcherMolecules=['H₂O','CO₂','O₂','N₂','NH₃','NaCl','CH₄','HCl','H₂SO₄','C₆H₁₂O₆'];
   function startCatcher(){
     stopCatcher();
+    playTrack('catcher');
     catcher={x:.5,objects:[],score:0,caught:0,missed:0,lives:3,elapsed:0,lastSpawn:0,lastFrame:0,frame:0,finished:false,tiltEnabled:false,tiltCenter:null,tiltSeen:false,tiltTimer:0};
     content.innerHTML=`<div class="catcher-head"><div><span class="dialog-kicker">ATRAPA ELEMENTOS PUROS · EVITA MOLÉCULAS</span><h2 class="dialog-title" id="dialogTitle">¡Atrapaelementos!</h2></div><span class="catcher-instructions">← → / A D · mouse · toca y arrastra</span></div><div class="catcher-tilt-row"><span id="catcherTiltStatus">Inclina el teléfono para mover al científico.</span><button type="button" id="catcherTiltButton">Activar inclinación</button></div><div class="catcher-hud" aria-live="polite"><span>⭐ <b id="catcherScore">0</b> pts</span><span>❤️ <b id="catcherLives">3</b></span><span>⬇️ Perdidos <b id="catcherMissed">0</b>/10</span><span>⚡ <b id="catcherSpeed">1.0×</b></span></div><div class="catcher-playfield" id="catcherPlayfield" tabindex="0" aria-label="Zona de juego. Mueve al científico para atrapar elementos puros y esquivar moléculas"><div class="catcher-lab-glow"></div><div class="catcher-objects" id="catcherObjects"></div><div class="catcher-player" id="catcherPlayer"><span class="catcher-scientist" aria-hidden="true">🧑🏻‍🔬</span><span class="catcher-beaker" aria-hidden="true"><i></i><b>⚛</b></span></div><div class="catcher-mobile-controls"><button type="button" data-catcher-dir="-1" aria-label="Mover a la izquierda">←</button><button type="button" data-catcher-dir="1" aria-label="Mover a la derecha">→</button></div></div><p class="catcher-tip">Analiza la fórmula: Fe o Au son elementos; H₂O, O₂ y NaCl son moléculas o compuestos.</p>`;
     const field=$('#catcherPlayfield');
@@ -206,6 +236,7 @@
   }
   function finishCatcher(){
     if(!catcher||catcher.finished)return;
+    pauseTrack('catcher');playEffect('success');
     catcher.finished=true;if(catcher.frame)cancelAnimationFrame(catcher.frame);
     const result={...catcher};const previous=state.best.catcher||0;state.points+=result.score;state.best.catcher=Math.max(previous,result.score);
     const completedNow=result.caught>=5;if(completedNow&&!state.completed.includes('catcher'))state.completed.push('catcher');
@@ -230,12 +261,29 @@
   dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&dialog.open)dialog.close();if(e.key==='Enter'&&dialog.open&&$('#textAnswer')===document.activeElement){e.preventDefault();checkText();}});
   document.addEventListener('keydown',e=>{if(!dialog.open||!catcher)return;const key=e.key.toLowerCase();if(key==='arrowleft'||key==='a'){e.preventDefault();catcher.x=Math.max(.055,catcher.x-.12);updateCatcherPlayer();}else if(key==='arrowright'||key==='d'){e.preventDefault();catcher.x=Math.min(.945,catcher.x+.12);updateCatcherPlayer();}});
-  dialog.addEventListener('close',stopCatcher);
+  dialog.addEventListener('close',()=>{stopCatcher();if(audioEnabled)playTrack('site');});
   $('#resetProgress').addEventListener('click',()=>resetDialog.showModal());
   $('#cancelReset').addEventListener('click',()=>resetDialog.close());
   $('#confirmReset').addEventListener('click',()=>{state=defaultState();saveState();render();resetDialog.close();showToast('Progreso reiniciado. ¡A empezar de nuevo!');});
   resetDialog.addEventListener('click',e=>{if(e.target===resetDialog)resetDialog.close();});
-  $('#soundToggle').addEventListener('click',e=>{soundOn=!soundOn;e.currentTarget.setAttribute('aria-pressed',String(soundOn));e.currentTarget.querySelector('span').textContent=soundOn?'Sonido on':'Sonido';if(soundOn)playTone(true);});
+  $('#soundToggle').addEventListener('click',()=>{
+    audioEnabled=!audioEnabled;
+    audioChoiceMade=true;
+    if(!audioEnabled)pauseAllTracks();
+    else if(dialog.open){if(activeGame?.kind==='catcher'&&catcher)playTrack('catcher');else pauseAllTracks();}
+    else playTrack('site');
+    syncAudioControls();
+  });
+  $('#audioSettingsToggle').addEventListener('click',e=>{const panel=$('#audioPanel'),open=panel.hidden;panel.hidden=!open;e.currentTarget.setAttribute('aria-expanded',String(open));});
+  $('#musicVolume').addEventListener('input',e=>{audioVolume=Number(e.currentTarget.value);try{localStorage.setItem('quimifriv-volume',String(audioVolume));}catch{}syncAudioControls();});
+  $('#muteAudio').addEventListener('click',()=>{audioMuted=!audioMuted;audioChoiceMade=true;try{localStorage.setItem('quimifriv-muted',String(audioMuted));}catch{}syncAudioControls();});
+  syncAudioControls();
+  document.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.top-controls')||audioChoiceMade)return;
+    audioEnabled=true;audioChoiceMade=true;syncAudioControls();
+    if(dialog.open){if(activeGame?.kind==='catcher'&&catcher)playTrack('catcher');else pauseAllTracks();}
+    else playTrack('site');
+  },{capture:true});
   const themeToggle=$("#themeToggle");
   function syncThemeButton(){const dark=document.documentElement.dataset.theme==="dark";themeToggle.setAttribute("aria-pressed",String(dark));themeToggle.title=dark?"Activar modo claro":"Activar modo oscuro";themeToggle.setAttribute("aria-label",themeToggle.title);themeToggle.querySelector(".theme-icon").textContent=dark?"☀":"☾";themeToggle.querySelector(".theme-label").textContent=dark?"Modo claro":"Modo oscuro";document.querySelector("#themeColorMeta").content=dark?"#102a35":"#123f50";}
   syncThemeButton();

@@ -7,17 +7,17 @@
   <meta name="description" content="QuimiFriv: minijuegos para dominar química del primer parcial, del átomo al laboratorio.">
   <title>QuimiFriv — Laboratorio del Primer Parcial</title>
   <script>try{if(localStorage.getItem("quimifriv-theme")==="dark")document.documentElement.dataset.theme="dark"}catch{}</script>
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <link rel="stylesheet" href="reference.css?v=3">
   <script src="data.js?v=4" defer></script>
-  <script src="app.js?v=10" defer></script>
+  <script src="app.js?v=13" defer></script>
 </head>
 <body>
   <div class="page-shell">
     <header class="topbar">
       <a class="brand" href="#inicio" aria-label="QuimiFriv, inicio"><span class="brand-mark">Q<span>✦</span></span><span>quimi<span class="brand-light">friv</span></span></a>
       <nav class="top-links" aria-label="Navegación"><a href="#ruta">Ruta de aprendizaje</a><a href="#juegos">Juegos</a><a href="#logros">Logros</a></nav>
-      <div class="top-controls"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Modo oscuro</span></button><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" title="Activar o desactivar sonidos">♫ <span>Sonido</span></button></div>
+      <div class="top-controls"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Modo oscuro</span></button><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" title="Activar o pausar la música de QuimiFriv">♫ <span class="sound-label">Música</span></button><div class="audio-controls"><button class="audio-settings-toggle" id="audioSettingsToggle" type="button" aria-label="Ajustes de audio" aria-expanded="false" aria-controls="audioPanel" title="Ajustes de audio">⚙</button><div class="audio-panel" id="audioPanel" hidden><label class="audio-volume-label" for="musicVolume">Volumen <output id="volumeValue" for="musicVolume">40%</output></label><input id="musicVolume" type="range" min="0" max="1" step="0.01" value="0.4" aria-label="Volumen de la música y los efectos"><button type="button" class="audio-mute-button" id="muteAudio" aria-pressed="false">Silenciar</button><small>La música empieza al activarla.</small></div></div></div>
     </header>
     <div class="institution-strip" aria-label="Instituciones educativas">
       <img src="assets/uat-logo.png" alt="Universidad Autónoma de Tamaulipas" class="institution-logo uat-logo">
@@ -89,6 +89,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
+
+
+
 
 
 
