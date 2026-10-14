@@ -226,7 +226,7 @@
       obj.y+=(obj.speed*multiplier)*delta;obj.el.style.top=`${obj.y}px`;obj.el.style.left=`${obj.x*100}%`;
       const objX=obj.x*field.clientWidth;
       if(obj.y+52>=playerLine&&obj.y<playerLine+48&&Math.abs(objX-playerX)<60){
-        obj.el.remove();if(obj.element){catcher.score+=10;catcher.caught++;playTone(true);}else{catcher.lives--;playTone(false);}updateCatcherHud();return false;
+        obj.el.remove();if(obj.element){catcher.score+=10;catcher.caught++;}else{catcher.lives--;playTone(false);}updateCatcherHud();return false;
       }
       if(obj.y>height){obj.el.remove();if(obj.element){catcher.missed++;updateCatcherHud();}return false;}
       return true;
