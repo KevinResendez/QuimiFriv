@@ -73,7 +73,7 @@
     const audio=effects[name];audio.currentTime=0;audio.volume=audioVolume;
     audio.play().catch(()=>{});
   }
-  function playTone(good){if(good){playEffect('correct');return;}if(!audioEnabled||audioMuted)return;try{const C=window.AudioContext||window.webkitAudioContext;const c=new C();const o=c.createOscillator();const gain=c.createGain();o.connect(gain);gain.connect(c.destination);o.frequency.value=220;gain.gain.value=.06*audioVolume;o.start();o.stop(c.currentTime+.12);o.onended=()=>c.close();}catch{} }
+  function playTone(good){if(good){if(activeGame?.kind==='catcher')return;playEffect('correct');return;}if(!audioEnabled||audioMuted)return;try{const C=window.AudioContext||window.webkitAudioContext;const c=new C();const o=c.createOscillator();const gain=c.createGain();o.connect(gain);gain.connect(c.destination);o.frequency.value=220;gain.gain.value=.06*audioVolume;o.start();o.stop(c.currentTime+.12);o.onended=()=>c.close();}catch{} }
   function openGame(id){
     activeGame=data.games.find(g=>g.id===id); if(!activeGame)return;
     pauseTrack('site');
