@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123f50" id="themeColorMeta">
+  <meta name="description" content="QuimiFriv: minijuegos para dominar química del primer parcial, del átomo al laboratorio.">
+  <title>QuimiFriv — Laboratorio del Primer Parcial</title>
+  <script>try{if(localStorage.getItem("quimifriv-theme")==="dark")document.documentElement.dataset.theme="dark"}catch{}</script>
+  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="reference.css?v=3">
+  <script src="data.js?v=4" defer></script>
+  <script src="app.js?v=10" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="QuimiFriv, inicio"><span class="brand-mark">Q<span>✦</span></span><span>quimi<span class="brand-light">friv</span></span></a>
+      <nav class="top-links" aria-label="Navegación"><a href="#ruta">Ruta de aprendizaje</a><a href="#juegos">Juegos</a><a href="#logros">Logros</a></nav>
+      <div class="top-controls"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Modo oscuro</span></button><button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" title="Activar o desactivar sonidos">♫ <span>Sonido</span></button></div>
+    </header>
+    <div class="institution-strip" aria-label="Instituciones educativas">
+      <img src="assets/uat-logo.png" alt="Universidad Autónoma de Tamaulipas" class="institution-logo uat-logo">
+      <img src="assets/fic-logo.png" alt="Facultad de Ingeniería y Ciencias" class="institution-logo fic-logo">
+    </div>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="live-dot"></span> TU LABORATORIO DE REPASO</p>
+          <h1>Quimi<span>Friv</span></h1>
+          <p class="hero-subtitle">Laboratorio del Primer Parcial</p>
+          <p class="hero-description">De las partículas más pequeñas a las mezclas que puedes separar. Aprende química resolviendo retos cortos, sumando puntos y desbloqueando medallas.</p>
+          <a class="primary-button" href="#juegos">Explorar minijuegos <span aria-hidden="true">→</span></a>
+          <div class="hero-note"><span>⚗️</span> Sin examen sorpresa. Bueno… casi.</div>
+        </div>
+        <div class="hero-art" aria-label="Ilustración decorativa de un átomo">
+          <div class="atom-illustration"><div class="orbit orbit-one"><i></i></div><div class="orbit orbit-two"><i></i></div><div class="orbit orbit-three"><i></i></div><div class="nucleus">Q</div><span class="atom-tag tag-z">Z = p⁺</span><span class="atom-tag tag-e">e⁻</span><span class="spark spark-one">✦</span><span class="spark spark-two">✧</span></div>
+          <div class="floating-card floating-card-top"><span class="mini-dot mint"></span> ¡Curiosidad activada!</div>
+          <div class="floating-card floating-card-bottom"><span class="mini-tube">🧪</span> Aprende jugando</div>
+        </div>
+        <div class="hero-stats" aria-label="Tu progreso">
+          <div class="stat"><span class="stat-icon">⚡</span><div><strong id="pointsTotal">0</strong><small>puntos</small></div></div>
+          <div class="stat"><span class="stat-icon">🏅</span><div><strong id="medalsTotal">0</strong><small>medallas</small></div></div>
+          <div class="stat progress-stat"><div class="progress-top"><small>Tu progreso</small><strong id="progressLabel">0%</strong></div><div class="progress-track"><span id="progressBar"></span></div><small id="completedLabel">0 de 9 juegos completados</small></div>
+        </div>
+      </section>
+
+      <section class="route-section" id="ruta">
+        <div class="section-heading"><div><p class="eyebrow">UN PASO A LA VEZ</p><h2>Tu ruta de aprendizaje</h2></div><span class="route-caption">De lo micro a lo macro <span>↗</span></span></div>
+        <div class="route-track" id="routeTrack" aria-label="Ruta de aprendizaje"></div>
+      </section>
+
+      <section class="games-section" id="juegos">
+        <div class="section-heading games-heading"><div><p class="eyebrow">ELIGE TU MISIÓN</p><h2>¿Qué vamos a descubrir?</h2><p class="section-intro">Cada partida es una oportunidad para entender algo nuevo.</p></div><div class="games-counter"><span id="visibleCount">9</span> minijuegos</div></div>
+        <div class="filters" role="group" aria-label="Filtrar juegos por categoría" id="filters"></div>
+        <div class="game-grid" id="gameGrid"></div>
+      </section>
+
+      <section class="reference-section" id="conceptos">
+        <div class="section-heading"><div><p class="eyebrow">ANTES DE LANZARTE</p><h2>Tu guía de bolsillo</h2><p class="section-intro">Abre una tarjeta para repasar la idea clave.</p></div></div>
+        <div class="reference-grid">
+          <details class="reference-card"><summary><span>⚛️</span> Átomo, iones e isótopos</summary><p>Un átomo tiene protones y neutrones en el núcleo y electrones distribuidos en orbitales. El número atómico <b>Z = p⁺</b>; el número de masa <b>A = p⁺ + n⁰</b>. Si un átomo gana o pierde electrones, forma un ion: catión (+) si pierde y anión (−) si gana. Isótopos son átomos del mismo elemento (igual Z) con distinto número de neutrones y, por tanto, distinto A.</p></details>
+          <details class="reference-card"><summary><span>🌌</span> Órbita y orbital</summary><p>En el modelo de Bohr, una órbita es una trayectoria definida asociada a cierta energía. En el modelo cuántico, un orbital es una región donde hay alta probabilidad de encontrar un electrón; no es un camino fijo. Cada orbital aloja hasta dos electrones con spins opuestos.</p></details>
+          <details class="reference-card"><summary><span>🔢</span> Los cuatro números cuánticos</summary><p><b>n</b> = nivel principal (1, 2, 3…). <b>l</b> = subnivel; para un n dado, l = 0 hasta n−1 (s=0, p=1, d=2, f=3 cuando esos valores están permitidos). <b>mₗ</b> = orientación, con enteros desde −l hasta +l. <b>mₛ</b> = spin, +½ o −½. Por ejemplo, para n=3, l puede ser 0, 1 o 2: l no siempre vale n−1.</p></details>
+          <details class="reference-card"><summary><span>🧭</span> Aufbau, Pauli y Hund</summary><p><b>Aufbau:</b> se ocupan primero los subniveles de menor energía, siguiendo el orden energético (…3p, 4s, 3d, 4p…). <b>Pauli:</b> no hay dos electrones de un átomo con los cuatro números cuánticos iguales; por eso caben como máximo dos por orbital y tienen spins opuestos. <b>Hund:</b> orbitales de igual energía se ocupan primero de uno en uno con spins paralelos. Hay excepciones conocidas como Cr y Cu, cuyas configuraciones reales favorecen subniveles d semillenos o llenos.</p></details>
+          <details class="reference-card"><summary><span>🧩</span> Bloques y electrones de valencia</summary><p>El bloque s, p, d o f indica el subnivel que se está ocupando al avanzar por la tabla. Para elementos representativos (bloques s y p), los electrones de valencia suelen ser los del nivel de n mayor. En transición (bloque d) también puede participar el subnivel d interno en los enlaces y estados de oxidación; no reduzcas su valencia a una sola regla de conteo.</p></details>
+          <details class="reference-card"><summary><span>📚</span> Familias del bloque p</summary><p>Grupo 13: familia del boro. Grupo 14: familia del carbono. Grupo 15: familia del nitrógeno (pnictógenos). Grupo 16: calcógenos. Grupo 17: halógenos. Grupo 18: gases nobles. El helio se coloca en el grupo 18 por sus propiedades, pero su configuración 1s² pertenece al bloque s.</p></details>
+          <details class="reference-card"><summary><span>✨</span> Modelo de Lewis</summary><p>Los símbolos de Lewis muestran los electrones de valencia como puntos. Un par compartido representa un enlace covalente; los pares no compartidos son pares libres. Muchos átomos representativos tienden al octeto, mientras que el hidrógeno completa un dueto. Existen excepciones; la estructura debe respetar el total de electrones de valencia y las cargas formales razonables.</p></details>
+          <details class="reference-card"><summary><span>🧪</span> Medición confiable</summary><p>Usa el material volumétrico según la exactitud requerida: vaso para contener o mezclar, probeta para medir volúmenes variables, pipeta para transferir y bureta para dispensar con control. Un matraz aforado prepara un volumen definido. Lee el menisco a la altura de los ojos; las cifras significativas reflejan la precisión real de la medición.</p></details>
+        </div>
+      </section>
+
+      <section class="achievement-section" id="logros">
+        <div class="achievement-copy"><p class="eyebrow">PEQUEÑOS GRANDES LOGROS</p><h2>Tu vitrina de medallas</h2><p>Completa retos para llenar tu colección. Cada medalla reconoce algo que ya dominas.</p><div class="medal-count"><span>🏆</span><strong id="medalProgress">0 / 6</strong><small>medallas desbloqueadas</small></div></div>
+        <div class="medal-grid" id="medalGrid"></div>
+      </section>
+      <section class="concept-strip"><span class="concept-icon">💡</span><div><strong>Una idea para llevarte</strong><p id="conceptText">El número de protones define al elemento; los electrones definen su carga y los neutrones, su isótopo.</p></div><button type="button" id="newConcept" aria-label="Mostrar otra idea">↻</button></section>
+    </main>
+    <footer><a class="brand footer-brand" href="#inicio"><span class="brand-mark">Q<span>✦</span></span><span>quimi<span class="brand-light">friv</span></span></a><p>Hecho para aprender con curiosidad. <span>🧪</span></p><p class="student-credit">Creado por el alumno <strong>Kevin Brayan Reséndez Rodríguez</strong></p><button class="reset-button" id="resetProgress" type="button">Reiniciar progreso</button></footer>
+  </div>
+
+  <dialog id="gameDialog" class="game-dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-frame"><button type="button" class="dialog-close" id="closeDialog" aria-label="Cerrar juego">×</button><div id="dialogContent"></div></div>
+  </dialog>
+  <dialog id="resetDialog" class="reset-dialog" aria-labelledby="resetTitle">
+    <div class="reset-dialog-content"><span class="reset-icon">↻</span><h2 id="resetTitle">¿Empezar de cero?</h2><p>Se borrarán los puntos, las medallas y los juegos completados guardados en este navegador.</p><div><button type="button" class="return-button" id="cancelReset">Conservar progreso</button><button type="button" class="check-button" id="confirmReset">Sí, reiniciar</button></div></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+
+
+
+
+
+
+
